@@ -97,13 +97,13 @@ trait ABTestSwitches {
     exposeClientSide = true
   )
 
-  val ABMembershipEngagementBanner = Switch(
+  val ABMembershipAndContributionsEngagementBanner20160811 = Switch(
     SwitchGroup.ABTests,
-    "ab-membership-engagement-banner",
-    "Test effectiveness of header for driving membership.",
+    "ab-membership-and-contributions-engagement-banner",
+    "Test effectiveness of header for driving contributions vs membership.",
     owners = Seq(Owner.withGithub("rtyley")),
     safeState = On,
-    sellByDate = new LocalDate(2017, 9, 7),
+    sellByDate = new LocalDate(2016, 8, 17),
     exposeClientSide = true
   )
 
