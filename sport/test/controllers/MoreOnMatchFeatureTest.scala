@@ -7,11 +7,16 @@ import play.api.test.FakeRequest
 
 @DoNotDiscover class MoreOnMatchFeatureTest
   extends FeatureSpec
+  with ConfiguredTestSuite
   with GivenWhenThen
   with Matchers
-  with FootballTestData with WithTestFootballClient with BeforeAndAfterAll with WithTestWsClient {
+  with FootballTestData
+  with WithTestFootballClient
+  with BeforeAndAfterAll
+  with WithMaterializer
+  with WithTestWsClient {
 
-  val moreOnMatchController = new MoreOnMatchController(testCompetitionsService)
+  lazy val moreOnMatchController = new MoreOnMatchController(testCompetitionsService)
 
   feature("Match Nav") {
 
