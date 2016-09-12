@@ -11,9 +11,7 @@ define([
     editionaliseMenu,
     detailsPolyfill
 ) {
-    var mainMenuId = '#main-menu';
     var html = $('html');
-    var mainMenuEl = $(mainMenuId);
     var veggieBurgerLink = $('.js-change-link');
     var primaryItems = $('.js-close-nav-list');
 
@@ -26,65 +24,38 @@ define([
         });
     }
 
-    function animateMenuOpen() {
-        return fastdomPromise.write(function () {
-            mainMenuEl.addClass('off-screen shown');
+    function animateMenu() {
+        if (!$('#new-header__nav__checkbox')[0].checked) {
+            console.log('opening menu');
 
-            veggieBurgerLink.addClass('new-header__nav__menu-button--open');
-            veggieBurgerLink.attr('href', '#');
-        }).then(function () {
-            return fastdomPromise.write(function () {
-                mainMenuEl.removeClass('off-screen');
-            });
-        }).then(function () {
-            var firstButton = $('.main-navigation__item__button')[0];
+            fastdomPromise.write(function () {
+                var firstButton = $('.main-navigation__item__button')[0];
 
-            return fastdomPromise.write(function () {
                 if (firstButton) {
+                    console.log('applying focus to ', firstButton);
                     firstButton.focus();
                 }
                 // Prevents scrolling on the body
+                console.log('preventing scroll on body');
                 html.css('overflow', 'hidden');
             });
-        });
-    }
+        } else {
+            console.log('closing menu');
+            fastdomPromise.write(function () {
+                var mainListItems = $('.main-navigation__item');
+                // Remove possible ordering for the lists
+                console.log('remove ordering / openness for lists');
+                mainListItems.removeAttr('style');
+                // No targetItem to put in as the parameter. All lists should close.
+                closeAllOtherPrimaryLists();
 
-    function animateMenuClose() {
-        return fastdomPromise.write(function () {
-            if (mainMenuEl.hasClass('shown')) {
-                mainMenuEl.addClass('off-screen');
-
-                veggieBurgerLink.removeClass('new-header__nav__menu-button--open');
-                veggieBurgerLink.attr('href', mainMenuId);
-
-                // TODO: Support browsers that don't have transitions
-                // We still want to hide this
-                if (mainMenuEl.length > 0) {
-
-                    mainMenuEl[0].addEventListener('transitionend', function handler() {
-
-                        mainMenuEl[0].removeEventListener('transitionend', handler);
-
-                        return fastdomPromise.write(function () {
-                            mainMenuEl.removeClass('off-screen');
-                            mainMenuEl.removeClass('shown');
-                        }).then(function () {
-                            return fastdomPromise.write(function () {
-                                var mainListItems = $('.main-navigation__item');
-                                // Remove possible ordering for the lists
-                                mainListItems.removeAttr('style');
-                                // No targetItem to put in as the parameter. All lists should close.
-                                closeAllOtherPrimaryLists();
-
-                                $('.new-header__nav__menu-button').focus();
-                                // Users should be able to scroll again
-                                html.css('overflow', '');
-                            });
-                        });
-                    });
-                }
-            }
-        });
+                console.log('focus on ', veggieBurgerLink[0]);
+                veggieBurgerLink[0].focus();
+                // Users should be able to scroll again
+                console.log('reinstate body scrolling');
+                html.css('overflow', '');
+            });
+        }
     }
 
     function moveTargetListToTop(targetListId) {
@@ -137,22 +108,10 @@ define([
         });
     }
 
-    function handleHashChange () {
-        var shouldShowMenu = window.location.hash === mainMenuId;
-        var shouldHideMenu = window.location.hash === '';
-
-        if (shouldShowMenu) {
-            animateMenuOpen();
-        } else if (shouldHideMenu) {
-            animateMenuClose();
-        }
-    }
-
     function init() {
         detailsPolyfill.init('.main-navigation__item__button');
 
-        window.addEventListener('hashchange', handleHashChange);
-        handleHashChange();
+        veggieBurgerLink[0].addEventListener('click', animateMenu);
 
         bindPrimaryItemClickEvents();
         openTargetListOnClick();
