@@ -24,35 +24,25 @@ define([
         });
     }
 
-    function animateMenu() {
+    function enhanceMenu() {
         if (!$('#new-header__nav__checkbox')[0].checked) {
-            console.log('opening menu');
-
             fastdomPromise.write(function () {
                 var firstButton = $('.main-navigation__item__button')[0];
 
                 if (firstButton) {
-                    console.log('applying focus to ', firstButton);
                     firstButton.focus();
                 }
                 // Prevents scrolling on the body
-                console.log('preventing scroll on body');
                 html.css('overflow', 'hidden');
             });
         } else {
-            console.log('closing menu');
             fastdomPromise.write(function () {
                 var mainListItems = $('.main-navigation__item');
                 // Remove possible ordering for the lists
-                console.log('remove ordering / openness for lists');
                 mainListItems.removeAttr('style');
                 // No targetItem to put in as the parameter. All lists should close.
                 closeAllOtherPrimaryLists();
-
-                console.log('focus on ', veggieBurgerLink[0]);
-                veggieBurgerLink[0].focus();
                 // Users should be able to scroll again
-                console.log('reinstate body scrolling');
                 html.css('overflow', '');
             });
         }
@@ -81,23 +71,34 @@ define([
         });
     }
 
-    function openTargetListOnClick() {
+    function bindPrimaryLinkClickEvents() {
         var primaryLinks = $('.js-open-section-in-menu');
 
         primaryLinks.each(function (primaryLink) {
 
             primaryLink.addEventListener('click', function () {
+                fastdomPromise
+                    .read(function () {
+                        return primaryLink.getAttribute('aria-controls');
+                    })
+                    .then(function (id) {
+                        var menuToOpen = $('#' + id);
+                        var menuButton = $('.main-navigation__item__button', menuToOpen);
 
-                fastdomPromise.read(function () {
-                    return primaryLink.getAttribute('aria-controls');
-                }).then(function (id) {
-                    var menuToOpen = $('#' + id);
-
-                    fastdomPromise.write(function () {
-                        menuToOpen.attr('open', '');
-                        return id;
-                    }).then(moveTargetListToTop.bind(id));
-                });
+                        fastdomPromise
+                            .write(function () {
+                                menuToOpen.attr('open', '');
+                                return id;
+                            })
+                            .then(moveTargetListToTop.bind(id))
+                            .then(function () {
+                                menuButton.focus();
+                            })
+                            .then(function () {
+                                // Prevents scrolling on the body
+                                html.css('overflow', 'hidden');
+                            });
+                    });
             });
         });
     }
@@ -111,10 +112,10 @@ define([
     function init() {
         detailsPolyfill.init('.main-navigation__item__button');
 
-        veggieBurgerLink[0].addEventListener('click', animateMenu);
+        veggieBurgerLink[0].addEventListener('click', enhanceMenu);
 
         bindPrimaryItemClickEvents();
-        openTargetListOnClick();
+        bindPrimaryLinkClickEvents();
 
         editionPicker();
         editionaliseMenu();

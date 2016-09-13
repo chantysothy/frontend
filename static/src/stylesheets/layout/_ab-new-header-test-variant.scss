@@ -69,7 +69,7 @@ $gutter-large: 55px;
 
 .new-header__nav__menu-button {
     // Override button from user agent stylesheet
-    position: fixed;
+    position: absolute;
     right: 0px;
     // Unset button from user agent stylesheet
     border: 0;
@@ -329,19 +329,6 @@ $gutter-large: 55px;
     left: 0;
     line-height: 1;
     z-index: $zindex-modal;
-    /***********
-    .js-on & {
-        &:not(.shown) {
-            display: none;
-        }
-    }
-
-    .js-off & {
-        &:not(:target) {
-            display: none;
-        }
-    }
-    *************/
 }
 
 .main-menu-container__overlay {
