@@ -4,7 +4,7 @@
 @import common.{LinkTo, NewNavigation}
 
 @primaryLinks(sectionName: String) = {
-    <label for="new-header__nav__checkbox" class="new-header__nav__link js-open-section-in-menu"
+    <label for="menu-toggle" class="new-header__nav__link js-open-section-in-menu"
         tabindex="0"
         aria-controls="primary-list-@sectionName"
     >
@@ -26,11 +26,11 @@
             @NewNavigation.topLevelSections.map { section =>
                 @primaryLinks(section.name)
             }
-            <input type="checkbox" id="new-header__nav__checkbox">
-            <label for="new-header__nav__checkbox" class="new-header__nav__menu-button js-change-link" tabindex="0">
+            <label for="menu-toggle" class="new-header__nav__menu-button js-change-link" tabindex="0">
                 <i class="new-header__veggie-burger-icon"></i>
                 <span class="u-h">Menu</span>
             </label>
+            <input type="checkbox" id="menu-toggle" class="new-header__nav__checkbox js-enhance-checkbox">
 
             @fragments.nav.newHeaderMenu()
         </nav>

@@ -24,19 +24,51 @@ define([
         });
     }
 
-    function enhanceMenu() {
-        if (!$('#new-header__nav__checkbox')[0].checked) {
+    // TODO: move to standard, make generic
+    function enhanceToButton() {
+        var checkBox = $('.js-enhance-checkbox');
+        var button = $.create('<button>');
+
+        button.addClass('new-header__nav__button js-open-menu-button');
+        button.attr('id', 'menu-toggle');
+        button.attr('aria-controls', 'main-menu');
+        button.attr('aria-expanded', 'false');
+
+        fastdomPromise.write(function() {
+            checkBox.replaceWith(button);
+            button[0].addEventListener('click', veggieBurgerClickHandler);
+        });
+    }
+
+    function veggieBurgerClickHandler() {
+        var button = $('.js-open-menu-button');
+
+        function menuIsOpen() {
+            return (button.attr('aria-expanded') === 'true');
+        }
+
+        if (!menuIsOpen()) {
             fastdomPromise.write(function () {
+                button.attr('aria-expanded', 'true');
+                $('#main-menu').attr('aria-hidden', 'false');
+                veggieBurgerLink.addClass('new-header__nav__menu-button--open');
+
                 var firstButton = $('.main-navigation__item__button')[0];
 
                 if (firstButton) {
                     firstButton.focus();
                 }
+                // No targetItem to put in as the parameter. All lists should close.
+                closeAllOtherPrimaryLists();
                 // Prevents scrolling on the body
                 html.css('overflow', 'hidden');
             });
         } else {
             fastdomPromise.write(function () {
+                button.attr('aria-expanded', 'false');
+                $('#main-menu').attr('aria-hidden', 'true');
+                veggieBurgerLink.removeClass('new-header__nav__menu-button--open');
+
                 var mainListItems = $('.main-navigation__item');
                 // Remove possible ordering for the lists
                 mainListItems.removeAttr('style');
@@ -112,8 +144,7 @@ define([
     function init() {
         detailsPolyfill.init('.main-navigation__item__button');
 
-        veggieBurgerLink[0].addEventListener('click', enhanceMenu);
-
+        enhanceToButton();
         bindPrimaryItemClickEvents();
         bindPrimaryLinkClickEvents();
 
